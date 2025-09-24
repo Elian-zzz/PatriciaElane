@@ -168,10 +168,17 @@ op_consultar_pedido.addEventListener("click", () => {
         <span class="respuesta"><mark>Remuneración: ${pedido.remuneracion} </mark></span>
         <span class="respuesta">Fecha Inicio: ${pedido.inicio} </span>
         <span class="respuesta">Fecha Final: ${pedido.final} </span>
+        <button class="btnEP" value="${pedido.id_pedido}">eliminar</button>
         `;
           lista.appendChild(item);
         });
         contResul.appendChild(lista);
+        const btnEliminarPedido = document.getElementsByClassName("btnEP");
+        for (let btn of btnEliminarPedido) {
+          btn.addEventListener("click", () => {
+            alert("btn eliminar apretado, id a eliminar: " + btn.value);
+          });
+        }
       });
   });
 
