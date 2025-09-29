@@ -1,5 +1,7 @@
+// const { response } = require("express");
+
 // main
-const main = document.getElementById("main");
+const main = document.querySelector("main");
 // opciones de cliente
 const op_nuevo_cliente = document.getElementById("nuevoC");
 // btn Crear nuevo cliente
@@ -40,7 +42,7 @@ op_nuevo_cliente.addEventListener("click", () => {
           <label>Contacto</label>
           <input type="text" id="contactoNC" required />
         </div>
-        <button type="button" id="btnNC">Crear nuevo pedido</button>
+        <button type="button" id="btnNC">Crear nuevo cliente</button>
         <!-- btnNuevoPedido-->
       </form>`;
   const btn_crear_cliente = document.getElementById("btnNC");
@@ -252,32 +254,18 @@ op_nuevo_pedido.addEventListener("click", () => {
         <button type="button" id="btnNP">Crear nuevo pedido</button>
         <!-- btnNuevoCliente-->
       </form>`;
+
   const btnNP = document.getElementById("btnNP");
-
+  // Botón nuevo pedido
   btnNP.addEventListener("click", () => {
-    // Obtenemos los valores para el fetch
-
-    // Tipo de pedido
-    const tipoP = document.getElementById("selctTipoP");
-    // Descripción de pedido
-    const descripcionP = document.getElementById("txtdetailsNP");
-    // Remuneración de pedido
-    const remuneracionP = document.getElementById("remuneracionNP");
-    // Fecha de inicio
-    const inicioP = document.getElementById("inicioNP");
-    // Fecha de final
-    const finalP = document.getElementById("finalNP");
-    // input id de pedidof
-    const inputC = document.getElementById("inptID");
-    // Botón crear pedido
     // id_cliente, tipo, descripcion,remuneracion, inicio,final
     const nuevoPedido = {
-      id_cliente: inputC.value,
-      tipo: tipoP.value,
-      descripcion: descripcionP.value,
-      remuneracion: remuneracionP.value,
-      inicio: inicioP.value,
-      final: finalP.value,
+      id_cliente: document.getElementById("inptID").value,
+      tipo: document.getElementById("selctTipoP").value,
+      descripcion: document.getElementById("txtdetailsNP").value,
+      remuneracion: document.getElementById("remuneracionNP").value,
+      inicio: document.getElementById("inicioNP").value,
+      final: document.getElementById("finalNP").value,
     };
     fetch("/api/ingresarPedido", {
       method: "POST",
@@ -288,14 +276,110 @@ op_nuevo_pedido.addEventListener("click", () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
-          alert("Pedido agregado correctamente");
-          btnNP.parentNode.reset();
+        if (!data.success) {
+          throw new Error("Error al crear el pedido");
         }
+
+        const idPedido = data.idPedido;
+        alert("Pedido Agregado correctamente, id Pedido: " + idPedido);
+
+        return fetch("/api/ingresarEstadoPedido", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_pedido: idPedido,
+          }),
+        });
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.success) {
+          throw new Error("Error al ingresar estado del pedido");
+        }
+
+        console.log("Pedido agregado con estado y todo chaval");
+        btnNP.parentNode.reset();
+      })
+      .catch((error) => {
+        // 🔥 CORRECCIÓN: Catch GLOBAL que captura errores de AMBOS fetch
+        console.error("Error completo:", error);
+        alert("Detalles del error: " + error.message);
       });
   });
 });
 
 op_eliminar_pedido.addEventListener("click", () => {
   alert("btn eliminar pedido apretado");
+});
+// Consultar Estado de Pedidos
+const btnCEP = document.getElementById("consultarEP");
+btnCEP.addEventListener("click", async () => {
+  main.innerHTML = `
+  <div id="contenedor"> 
+  <div id="contP" class="contenedor" contEstado><h2 tituloUwu Pendiente>Pendientes</h2>
+</div>
+  <div id="contC" class="contenedor" contEstado><h2 tituloUwu Concretado>Concretados</h2>
+</div>
+      </div>
+  `.trim();
+
+  function crearElementoPedido(pedido) {
+    const nuevaData = document.createElement("div");
+    nuevaData.className = "contenedor";
+    nuevaData.innerHTML = `
+          <div contAsistente class="contenedor">
+            <span colin spanNombre>${pedido.nombre_cliente}</span>
+            <span colpar>ID PEDIDO: <b resultado>${pedido.id_pedido}</b></span>
+            <span colin>TIPO: <b resultado>${pedido.tipo}</b></span>
+            <span colpar>INICIO: <b resultado>${pedido.inicio}</b></span>
+            <span colin>FINAL: <b resultado>${pedido.final}</b></span>
+            <span colpar>ESTADO:: <b resultado>${pedido.estado}</b></span>
+            <span descripcion colin
+              >DESCRIPCIÓN:
+              <b resultado
+                >${pedido.descripcion}</b
+              >
+            </span>
+            <span colpar>REMUNERACIÓN: <b resultado>${pedido.remuneracion}</b></span>
+          </div>
+        `;
+
+    return nuevaData;
+  }
+
+  const contenedorP = document.getElementById("contP");
+  const contenedorC = document.getElementById("contC");
+
+  try {
+    const [responsePendientes, responseConcretados] = await Promise.all([
+      fetch("/api/pedidosPendientes"),
+      fetch("/api/pedidosConcretados"),
+    ]);
+
+    if (!responseConcretados || !responsePendientes) {
+      throw new Error("Error en la respuesta HTTP");
+    }
+
+    const [dataPendientes, dataConcretados] = await Promise.all([
+      responsePendientes.json(),
+      responseConcretados.json(),
+    ]);
+
+    if (Array.isArray(dataPendientes)) {
+      dataPendientes.forEach((pedido) => {
+        contenedorP.appendChild(crearElementoPedido(pedido));
+      });
+    }
+
+    if (Array.isArray(dataConcretados)) {
+      dataConcretados.forEach((pedido) => {
+        contenedorC.appendChild(crearElementoPedido(pedido));
+      });
+    }
+  } catch (error) {
+    console.error("Error Fetching pedidos " + error);
+    main.innerHTML = `<div class="error">Error al cargar los pedidos: ${error.message}</div>`;
+  }
 });
