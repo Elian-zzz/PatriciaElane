@@ -1,4 +1,4 @@
-// const { response } = require("express");
+// ⚠️ ❌ ✅
 
 // main
 const main = document.querySelector("main");
@@ -13,6 +13,7 @@ const op_nuevo_pedido = document.getElementById("nuevoP");
 const op_consultar_pedido = document.getElementById("consultarP");
 const op_eliminar_pedido = document.getElementById("eliminarP");
 
+// Función para obtener fecha actual con parametro para agregar días desde la fecha actual
 function obtenerFechaActual(masDia = 0) {
   let fechaActual = new Date();
   fechaActual.setDate(fechaActual.getDate() + masDia);
@@ -22,9 +23,11 @@ function obtenerFechaActual(masDia = 0) {
   return `${año}-${mes}-${dia}`;
 }
 
-// AL apretar botones cliente
+// Botón crear nuevo cliente
 op_nuevo_cliente.addEventListener("click", () => {
-  main.innerHTML = `<form id="fomrNuevoC">
+  // Función de manejo del DOM para la creación del formulario crear nuevo cliente
+  function crearFormularioNuevoCLiente() {
+    main.innerHTML = `<form id="fomrNuevoC">
         <h1>Crear nuevo cliente</h1>
         <div class="contenedor">
           <label>Nombre</label>
@@ -45,35 +48,77 @@ op_nuevo_cliente.addEventListener("click", () => {
         <button type="button" id="btnNC">Crear nuevo cliente</button>
         <!-- btnNuevoPedido-->
       </form>`;
+  }
+  crearFormularioNuevoCLiente();
+  // Obtenemos los elementos DOM del formulario
   const btn_crear_cliente = document.getElementById("btnNC");
-  btn_crear_cliente.addEventListener("click", () => {
-    let nombreC = document.getElementById("nombreNC");
-    let referenciaC = document.getElementById("referenciaNC");
-    let direccionC = document.getElementById("direccionNC");
-    let contactoC = document.getElementById("contactoNC");
+
+  const nombreC = document.getElementById("nombreNC");
+
+  const referenciaC = document.getElementById("referenciaNC");
+
+  const direccionC = document.getElementById("direccionNC");
+
+  const contactoC = document.getElementById("contactoNC");
+
+  btn_crear_cliente.addEventListener("click", async () => {
     const nuevoCliente = {
       nom: nombreC.value,
       referencia: referenciaC.value,
       direccion: direccionC.value,
       contacto: contactoC.value,
     };
-    fetch("/api/nuevoCliente", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(nuevoCliente),
-    })
+
+    function crearCliente() {
+      fetch("/api/nuevoCliente", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(nuevoCliente),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert(
+              "✅ Cliente (" + nuevoCliente.nom + ") agregado correctamente"
+            );
+            btn_crear_cliente.parentNode.reset();
+          }
+        });
+    }
+
+    await fetch("/api/consultarNombreClientes?nombre=" + nombreC.value)
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
-          alert("Cliente agregado correctamente");
-          btn_crear_cliente.parentNode.reset();
+        console.log(data);
+        if (!Array.isArray(data)) {
+          console.error("Información invalida retornada de la BD");
         }
+        if (data.length !== 0) {
+          data.forEach((elemento) => {
+            const SiNo = confirm(
+              `⚠️ El siguiente cliente (${elemento.nombre}) con la referencia (${elemento.referencia}) ya existe en la Base de Datos, ¿deseas crearlo de todas formas?`
+            );
+            if (SiNo) {
+              return crearCliente();
+            } else {
+              alert(`❌ Creación del cliente ${nombreC.value} cancelada`);
+              btn_crear_cliente.parentNode.reset();
+            }
+          });
+        } else {
+          console.log("Sin omologo en la BD");
+          return crearCliente();
+        }
+      })
+      .catch((error) => {
+        alert("❌ error: " + error);
+        console.error("error: ( " + error + " ) ");
       });
   });
 });
-
+// Consultar clientes
 op_consultar_cliente.addEventListener("click", () => {
   // Terminar busqueda dinamica por nombre de cliente
 
@@ -136,7 +181,7 @@ op_consultar_cliente.addEventListener("click", () => {
       contResul.appendChild(lista);
     });
 });
-
+// Consultar pedido
 op_consultar_pedido.addEventListener("click", () => {
   main.innerHTML =
     '<div class="contenedorV"><input type="text" id="inputABP" class="inputBP" /><button id="btnBP" title="buscar pedido por nombre de cliente">Buscar Pedido</button></div> <div class="contenedorV"><input type="date" id="inptDateCP"></div><div id="resulABP"></div>';
@@ -147,6 +192,23 @@ op_consultar_pedido.addEventListener("click", () => {
 
   const contResul = document.getElementById("resulABP");
 
+  function crearElementoLista(pedido) {
+    const item = document.createElement("li");
+    item.innerHTML = `
+        <span class="respuesta nombre"> ${pedido.nombre_cliente} </span>
+        <span class="respuesta">ID Cliente: ${pedido.id_cliente} </span>
+        <span class="respuesta">ID Pedido: ${pedido.id_pedido} </span>
+        <span class="respuesta">Tipo: ${pedido.tipo} </span>
+        <span class="respuesta">Descripción: ${pedido.descripcion} </span>
+        <span class="respuesta"><mark>Remuneración: ${pedido.remuneracion} </mark></span>
+        <span class="respuesta">Fecha Inicio: ${pedido.inicio} </span>
+        <span class="respuesta">Fecha Final: ${pedido.final} </span>
+        <!-- <button class="btnEP" value="${pedido.id_pedido}">eliminar</button> -->
+        `;
+    return item;
+  }
+
+  // Buscar pedidos por nombre
   btnbuscar.addEventListener("click", () => {
     contResul.innerHTML = "";
     fetch("/api/consultarPedidoPorNombre?nombre=" + inputBP.value)
@@ -160,27 +222,15 @@ op_consultar_pedido.addEventListener("click", () => {
         const lista = document.createElement("ul");
         lista.className = "pedidos";
         data.forEach((pedido) => {
-          const item = document.createElement("li");
-          item.innerHTML = `
-        <span class="respuesta nombre"> ${pedido.nombre_cliente} </span>
-        <span class="respuesta">ID Cliente: ${pedido.id_cliente} </span>
-        <span class="respuesta">ID Pedido: ${pedido.id_pedido} </span>
-        <span class="respuesta">Tipo: ${pedido.tipo} </span>
-        <span class="respuesta">Descripción: ${pedido.descripcion} </span>
-        <span class="respuesta"><mark>Remuneración: ${pedido.remuneracion} </mark></span>
-        <span class="respuesta">Fecha Inicio: ${pedido.inicio} </span>
-        <span class="respuesta">Fecha Final: ${pedido.final} </span>
-        <button class="btnEP" value="${pedido.id_pedido}">eliminar</button>
-        `;
-          lista.appendChild(item);
+          lista.appendChild(crearElementoLista(pedido));
         });
         contResul.appendChild(lista);
-        const btnEliminarPedido = document.getElementsByClassName("btnEP");
-        for (let btn of btnEliminarPedido) {
-          btn.addEventListener("click", () => {
-            alert("btn eliminar apretado, id a eliminar: " + btn.value);
-          });
-        }
+        // const btnEliminarPedido = document.getElementsByClassName("btnEP");
+        // for (let btn of btnEliminarPedido) {
+        //   btn.addEventListener("click", () => {
+        //     alert("btn eliminar apretado, id a eliminar: " + btn.value);
+        //   });
+        // }
       });
   });
 
@@ -212,9 +262,9 @@ op_consultar_pedido.addEventListener("click", () => {
     });
 });
 
-op_eliminar_cliente.addEventListener("click", () => {
-  alert("btn eliminar cliente apretado");
-});
+// op_eliminar_cliente.addEventListener("click", () => {
+//   alert("btn eliminar cliente apretado");
+// });
 //  Al apretar botones pedido
 op_nuevo_pedido.addEventListener("click", () => {
   const fechaActual = obtenerFechaActual(0);
@@ -281,7 +331,8 @@ op_nuevo_pedido.addEventListener("click", () => {
         }
 
         const idPedido = data.idPedido;
-        alert("Pedido Agregado correctamente, id Pedido: " + idPedido);
+
+        alert("✅ Pedido Agregado correctamente");
 
         return fetch("/api/ingresarEstadoPedido", {
           method: "POST",
@@ -290,6 +341,7 @@ op_nuevo_pedido.addEventListener("click", () => {
           },
           body: JSON.stringify({
             id_pedido: idPedido,
+            estado: "pendiente",
           }),
         });
       })
@@ -303,16 +355,16 @@ op_nuevo_pedido.addEventListener("click", () => {
         btnNP.parentNode.reset();
       })
       .catch((error) => {
-        // 🔥 CORRECCIÓN: Catch GLOBAL que captura errores de AMBOS fetch
         console.error("Error completo:", error);
-        alert("Detalles del error: " + error.message);
+
+        alert("❌ error: " + error);
       });
   });
 });
 
-op_eliminar_pedido.addEventListener("click", () => {
-  alert("btn eliminar pedido apretado");
-});
+// op_eliminar_pedido.addEventListener("click", () => {
+//   alert("btn eliminar pedido apretado");
+// });
 // Consultar Estado de Pedidos
 const btnCEP = document.getElementById("consultarEP");
 btnCEP.addEventListener("click", async () => {
@@ -325,9 +377,14 @@ btnCEP.addEventListener("click", async () => {
       </div>
   `.trim();
 
+  /**
+   * @param {HTMLElement} obj - El objeto DOM que se va a procesar
+   */
+
+  // botonActualizarEstadoPedido
+
   function crearElementoPedido(pedido) {
     const nuevaData = document.createElement("div");
-    nuevaData.className = "contenedor";
     nuevaData.innerHTML = `
           <div contAsistente class="contenedor">
             <span colin spanNombre>${pedido.nombre_cliente}</span>
@@ -343,10 +400,64 @@ btnCEP.addEventListener("click", async () => {
               >
             </span>
             <span colpar>REMUNERACIÓN: <b resultado>${pedido.remuneracion}</b></span>
-          </div>
+            </div>
         `;
+    // class="btnActualizarEP" = clase de los botónes para actualizar el estado de los pedido de pendientes a concreatdos
 
     return nuevaData;
+  }
+  function crearElementoPedidoCB(pedido) {
+    const nuevaData = document.createElement("div");
+    nuevaData.innerHTML = `
+          <div contAsistente class="contenedor">
+            <span colin spanNombre>${pedido.nombre_cliente}</span>
+            <span colpar>ID PEDIDO: <b resultado>${pedido.id_pedido}</b></span>
+            <span colin>TIPO: <b resultado>${pedido.tipo}</b></span>
+            <span colpar>INICIO: <b resultado>${pedido.inicio}</b></span>
+            <span colin>FINAL: <b resultado>${pedido.final}</b></span>
+            <span colpar>ESTADO:: <b resultado>${pedido.estado}</b></span>
+            <span descripcion colin
+              >DESCRIPCIÓN:
+              <b resultado
+                >${pedido.descripcion}</b
+              >
+            </span>
+            <span colpar>REMUNERACIÓN: <b resultado>${pedido.remuneracion}</b></span>
+            <span colin><button class="btnActualizarEP" value="${pedido.id_pedido}">Actualizar estado pedido</button></span>
+            </div>
+        `;
+    // class="btnActualizarEP" = clase de los botónes para actualizar el estado de los pedido de pendientes a concreatdos
+
+    return nuevaData;
+  }
+  function cambiarEstadoPedido(idpedido) {
+    fetch("/api/actualizarEstadoPedido", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id_pedido: idpedido,
+        estado: "concretado",
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error en la petición http de cambiar estado pedido");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          alert("✅ Pedido agregado correctamente, id:" + idpedido);
+          btnCEP.click();
+        }
+      })
+      .catch((error) => {
+        console.error("Error: " + error);
+
+        alert("❌ error: " + error);
+      });
   }
 
   const contenedorP = document.getElementById("contP");
@@ -369,7 +480,15 @@ btnCEP.addEventListener("click", async () => {
 
     if (Array.isArray(dataPendientes)) {
       dataPendientes.forEach((pedido) => {
-        contenedorP.appendChild(crearElementoPedido(pedido));
+        // variable auxiliar
+        contenedorP.appendChild(crearElementoPedidoCB(pedido));
+      });
+      //  BotontesActualizarEstadoPedido
+      const botonesAEP = document.querySelectorAll(".btnActualizarEP");
+      botonesAEP.forEach((boton) => {
+        boton.addEventListener("click", () => {
+          cambiarEstadoPedido(boton.value);
+        });
       });
     }
 

@@ -144,23 +144,64 @@ app.post("/api/ingresarPedido", async (req, res) => {
     });
   }
 });
-
+// Ingresar estado de un pedido
 app.post("/api/ingresarEstadoPedido", async (req, res) => {
   console.log("consulta estado pedido");
-  const { id_pedido } = req.body;
+  const { id_pedido, estado } = req.body;
   if (!id_pedido) {
     return res.json({ success: "false", error: "datos incompletos" });
   }
   try {
-    await db.query(
-      "INSERT INTO estadoPedido(id_pedido,estado) VALUE(?,'pendiente');",
-      [id_pedido]
-    );
+    await db.query("INSERT INTO estadoPedido(id_pedido,estado) VALUE(?,?);", [
+      id_pedido,
+      estado,
+    ]);
     res.json({ success: true });
   } catch (error) {
     res.json({
       success: false,
       error: "Error al ingresar estado del pedido",
+      detalle: error.message,
+    });
+  }
+});
+//  Actualizar estado de pedidos
+app.post("/api/actualizarEstadoPedido", async (req, res) => {
+  console.log("consulta estado pedido");
+  const { id_pedido, estado } = req.body;
+  if (!id_pedido) {
+    return res.json({ success: "false", error: "datos incompletos" });
+  }
+  try {
+    await db.query("update estadoPedido set estado = ? where id_pedido = ?;", [
+      estado,
+      id_pedido,
+    ]);
+    res.json({ success: true });
+  } catch (error) {
+    res.json({
+      success: false,
+      error: "Error al ingresar estado del pedido",
+      detalle: error.message,
+    });
+  }
+});
+// Consultar si el nombre que ingrese un nuevo usuario ya existe en la BD
+app.get("/api/consultarNombreClientes", async (req, res) => {
+  // select nombre from cliente where nombre like ?;
+  const { nombre } = req.query; // desestructura el objeto obtenido en la petición
+  if (!nombre) {
+    return res.json({ success: false, error: "datos incompletos" });
+  }
+  try {
+    const [rows] = await db.query(
+      "SELECT nombre,referencia FROM cliente WHERE nombre LIKE ?",
+      nombre
+    );
+    res.json(rows); // Envía la respuesta de la BD en formato json
+  } catch (error) {
+    res.status(500).json({
+      error: "error en la consulta de nombre a la BD",
       detalle: error.message,
     });
   }
@@ -222,6 +263,7 @@ app.get("/api/pedidosConcretados", async (req, res) => {
   }
 });
 
+// Escucha del servidor
 app.listen(PUERTO, () => {
   console.log("Servidor PatWa escuchando en http://localhost:" + PUERTO);
 });

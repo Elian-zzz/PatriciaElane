@@ -1,6 +1,8 @@
 :root {
   --verde1: #3e6b4080;
   --verde2: #1f52219d;
+  --rojo1: #6b403e80;
+  --rojo2: #521f1f9d;
   --fuenteFormal: Verdana, Geneva, Tahoma, sans-serif;
 }
 
@@ -174,11 +176,17 @@ div[contEstado] {
   width: 400px;
 }
 
-[colin] {
+#contC [colin] {
   background-color: var(--verde1);
 }
-[colpar] {
+#contC [colpar] {
   background-color: var(--verde2);
+}
+#contP [colin] {
+  background-color: var(--rojo1);
+}
+#contP [colpar] {
+  background-color: var(--rojo2);
 }
 [resultado] {
   color: rgb(247, 246, 243);
@@ -212,4 +220,8 @@ div[contEstado] {
   margin: 1rem;
   border-radius: 4px;
   border: 1px solid #f5c6cb;
+}
+.PedidoUltimoDia {
+  border: 2px solid red;
+  background-color: orange;
 }

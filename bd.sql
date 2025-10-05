@@ -26,6 +26,9 @@ inicio date not null,
 final date not null,
 foreign key (id_cliente) references cliente(id_cliente)
 );
+delete from pedido where id_pedido > 0;
+select * from estadoPedido;
+
 # consultar tabla pedido
 select * from pedido;
 # ingresar un pedido
@@ -47,8 +50,7 @@ SELECT pedido.id_pedido, pedido.id_cliente, cliente.nombre AS nombre_cliente, pe
         DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final
        FROM pedido
        JOIN cliente ON pedido.id_cliente = cliente.id_cliente 
-       WHERE cliente.nombre LIKE "el%"
-       LIMIT 4;
+       ;
 # buscar pedido por cliente y fecha       
 select pedido.id_pedido, pedido.id_cliente, cliente.nombre AS nombre_cliente, pedido.tipo, pedido.descripcion, pedido.remuneracion,
         DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
@@ -85,3 +87,6 @@ JOIN cliente ON pedido.id_cliente = cliente.id_cliente
 JOIN estadoPedido ON pedido.id_pedido = estadoPedido.id_pedido where estado = "pendiente" limit 15;
 
 # id_cliente, nombre_cliente, id_pedido,tipo,descripcion,remuneracion,inicio,final,estado
+
+# obtiene solo el nombre de los clientes
+select nombre,referencia from cliente where nombre like "elian";
