@@ -181,6 +181,36 @@ op_consultar_cliente.addEventListener("click", () => {
       contResul.appendChild(lista);
     });
 });
+
+function consultarPedidos() {
+  fetch("/api/consultarPedidos")
+    .then((response) => response.json())
+    .then((data) => {
+      if (!Array.isArray(data) || data.length === 0) {
+        contResul.innerHTML = "<p>No hay pedidos disponibles</p>";
+        return;
+      }
+      const lista = document.createElement("ul");
+      lista.className = "pedidos";
+      data.forEach((pedido) => {
+        const item = document.createElement("li");
+        // id_pedido,id_cliente, tipo, descripcion,remuneracion, inicio,final
+        item.innerHTML = `
+  <span class="respuesta nombre"> ${pedido.nombre_cliente} </span>
+  <span class="respuesta">ID Cliente: ${pedido.id_cliente} </span>
+  <span class="respuesta">ID Pedido: ${pedido.id_pedido} </span>
+  <span class="respuesta">Tipo: ${pedido.tipo} </span>
+  <span class="respuesta">Descripción: ${pedido.descripcion} </span>
+  <span class="respuesta"><mark>Remuneración: ${pedido.remuneracion} </mark></span>
+  <span class="respuesta">Fecha Inicio: ${pedido.inicio} </span>
+  <span class="respuesta">Fecha Final: ${pedido.final} </span>
+`;
+        lista.appendChild(item);
+      });
+      contResul.appendChild(lista);
+    });
+}
+
 // Consultar pedido
 op_consultar_pedido.addEventListener("click", () => {
   main.innerHTML =
@@ -233,33 +263,7 @@ op_consultar_pedido.addEventListener("click", () => {
         // }
       });
   });
-
-  fetch("/api/consultarPedidos")
-    .then((response) => response.json())
-    .then((data) => {
-      if (!Array.isArray(data) || data.length === 0) {
-        contResul.innerHTML = "<p>No hay pedidos disponibles</p>";
-        return;
-      }
-      const lista = document.createElement("ul");
-      lista.className = "pedidos";
-      data.forEach((pedido) => {
-        const item = document.createElement("li");
-        // id_pedido,id_cliente, tipo, descripcion,remuneracion, inicio,final
-        item.innerHTML = `
-  <span class="respuesta nombre"> ${pedido.nombre_cliente} </span>
-  <span class="respuesta">ID Cliente: ${pedido.id_cliente} </span>
-  <span class="respuesta">ID Pedido: ${pedido.id_pedido} </span>
-  <span class="respuesta">Tipo: ${pedido.tipo} </span>
-  <span class="respuesta">Descripción: ${pedido.descripcion} </span>
-  <span class="respuesta"><mark>Remuneración: ${pedido.remuneracion} </mark></span>
-  <span class="respuesta">Fecha Inicio: ${pedido.inicio} </span>
-  <span class="respuesta">Fecha Final: ${pedido.final} </span>
-`;
-        lista.appendChild(item);
-      });
-      contResul.appendChild(lista);
-    });
+  consultarPedidos();
 });
 
 // op_eliminar_cliente.addEventListener("click", () => {
