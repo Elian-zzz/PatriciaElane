@@ -16,9 +16,7 @@ app.get("/", (req, res) => {
 // Ingresar un nuevo cliente
 app.post("/api/nuevoCliente", async (req, res) => {
   const { nom, referencia, direccion, contacto } = req.body;
-  if (!nom || !referencia || !direccion || !contacto) {
-    return res.json({ success: false, error: "datos incompletos" });
-  }
+
   try {
     await db.query(
       "insert into cliente(nombre,referencia,direccion,contacto) values(?,?,?,?);",
@@ -123,8 +121,17 @@ app.post("/api/ingresarPedido", async (req, res) => {
     !inicio ||
     !final
   ) {
-    return res.json({ success: false, error: "datos incompletos" });
+    return res.json({ success: false, error: "Datos incompletos" });
   }
+
+  if (inicio > final || inicio === final) {
+    return res.json({
+      success: false,
+      error:
+        "El comienzo y el final deben de ser distintos, el inicio debe de ser menor que el final",
+    });
+  }
+
   try {
     const [result] = await db.query(
       "insert into pedido(id_cliente,tipo, descripcion,remuneracion, inicio,final) values(?,?,?,?,?,?);",
@@ -258,6 +265,33 @@ app.get("/api/pedidosConcretados", async (req, res) => {
     console.error("Error detallado:" + error);
     res.status(500).json({
       error: "error al traer pedidos pendientes de la BD",
+      detalle: error.message,
+    });
+  }
+});
+// consultar pedidos último plazo
+app.get("/api/pedidosUltimoPlazo", async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+  SELECT
+  pedido.id_cliente,
+  cliente.nombre AS nombre_cliente,
+  pedido.id_pedido,
+  pedido.tipo,
+  pedido.descripcion,
+  pedido.remuneracion,
+  DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
+  DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final,
+  estadoPedido.estado
+FROM pedido
+JOIN cliente ON pedido.id_cliente = cliente.id_cliente
+JOIN estadoPedido ON pedido.id_pedido = estadoPedido.id_pedido WHERE estado = "pendiente" && final = curdate();
+`);
+    res.json(rows);
+  } catch (error) {
+    console.error("Error detallado:" + error);
+    res.status(500).json({
+      error: "error al traer pedidos ultimo plazo de la BD",
       detalle: error.message,
     });
   }
