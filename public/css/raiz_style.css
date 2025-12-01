@@ -318,11 +318,17 @@ ul.clientes,
 
 ul.clientes li {
   background: white;
+  cursor: pointer;
   padding: 1.5rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   transition: var(--transition);
   border-left: 4px solid var(--primary);
+}
+
+ul.clientes > li > button:active {
+  background-color: #33333359;
+  transition: none;
 }
 
 .PedidoUltimoDia > ul li {

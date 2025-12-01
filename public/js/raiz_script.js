@@ -144,7 +144,9 @@ class ManipulacionDOM {
   }
 }
 class ManipulacionAPI {
-  constructor() {}
+  constructor() {
+    this.apartadoCliente = false; // Cuando se construya el apartado de clientes cambiará de estado a true (es lo que hay hasta la implementación de react).
+  }
 
   /**
    *
@@ -265,17 +267,45 @@ class ManipulacionAPI {
         lista.className = "clientes";
         data.forEach((cliente) => {
           const item = document.createElement("li");
+
           item.innerHTML = `
         <span class="respuesta nombre"> ${cliente.nombre} </span>
         <span class="respuesta">Referencia: ${cliente.referencia} </span>
         <span class="respuesta">Dirección: ${cliente.direccion} </span>
         <span class="respuesta">Contacto: ${cliente.contacto} </span>
         <span class="respuesta">ID: ${cliente.id_cliente} </span>
+        <button class="botonCliente">COPIAR CLIENTE</button>
         `;
           lista.appendChild(item);
         });
         this.contResul.appendChild(lista);
       });
+    window.addEventListener("DOMContentLoaded", this.#obtenerDatosDeClientes());
+  }
+
+/* 
+
+============================ 
+= MÉTODO EN IMPLEMENTACIÓN =
+============================
+- Al clickear las cartas de 
+ clientes se obtenga el nombre
+ y el id del cliente y se impriman 
+ en el recuadro de usuario 
+ almacenado
+
+#obtenerDatosDeClientes(){...}
+Por ahora los estilos están bien,
+actualmente ocurren problemas al 
+obtener al manipular la Información
+del nodo padre.
+*/
+  #obtenerDatosDeClientes() {
+    console.log("Ejecutando función de reconocimiento de clientes");
+    const btnCopiarClientes = document.querySelectorAll(".botonCliente");
+    console.log("=> debugging variable: " + btnCopiarClientes);
+
+    btnCopiarClientes.forEach((btn) => console.log(btn.parentNode));
   }
 
   // metodo que consulta todos los clientes con un limite de 15 para imprimir en la pre busqueda
@@ -298,14 +328,17 @@ class ManipulacionAPI {
         <span class="respuesta">Dirección: ${cliente.direccion} </span>
         <span class="respuesta">Contacto: ${cliente.contacto} </span>
         <span class="respuesta">ID: ${cliente.id_cliente} </span>
+        <button class="botonCliente">COPIAR CLIENTE</button>
         `;
           lista.appendChild(item);
         });
         this.contResul.appendChild(lista);
       });
+    window.addEventListener("DOMContentLoaded", this.#obtenerDatosDeClientes());
   }
 
   consultarPedidos(contResul) {
+    this.apartadoCliente = false;
     this.contResul = contResul;
     fetch("/api/consultarPedidos")
       .then((response) => response.json())
@@ -467,6 +500,8 @@ class ManipulacionAPI {
   }
 }
 
+//  ==================================== COMIENZO DE CODÍGO FUERA DE CLASES ==================================
+
 // main
 const main = document.querySelector("main");
 
@@ -522,7 +557,9 @@ op_consultar_cliente.addEventListener("click", () => {
   btnbuscar.addEventListener("click", () => {
     // buscar cliente
     if (!inputBC || inputBC.value === "") {
-      return alert("⚠️ Debes de ingresar un cliente para consultar");
+      contResul.innerHTML = "";
+      return (contResul.innerHTML =
+        "<p class='alerta'>⚠️ Debes de ingresar un cliente para consultar </p>");
     } else {
       manAPI.buscarClientePorNombre(inputBC);
     }
@@ -548,9 +585,9 @@ op_consultar_pedido.addEventListener("click", () => {
     // buscar pedidos por nombre CLiente
 
     if (!inputBP || inputBP.value === "") {
-      return alert(
-        "⚠️ Debes de ingresar el nombre de un cliente para consultar sus pedidos"
-      );
+      contResul.innerHTML = "";
+      return (contResul.innerHTML =
+        "<p class='alerta'>⚠️ Debes de ingresar el nombre de un cliente para consultar sus pedidos</p>");
     } else {
       manAPI.consultarPedidosPorNombreCLiente(inputBP);
     }
