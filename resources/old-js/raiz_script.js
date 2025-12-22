@@ -274,38 +274,46 @@ class ManipulacionAPI {
         <span class="respuesta">Dirección: ${cliente.direccion} </span>
         <span class="respuesta">Contacto: ${cliente.contacto} </span>
         <span class="respuesta">ID: ${cliente.id_cliente} </span>
-        <button class="botonCliente">COPIAR CLIENTE</button>
+        <button class="btn-copiar">COPIAR CLIENTE</button>
         `;
           lista.appendChild(item);
         });
         this.contResul.appendChild(lista);
+        this.renderizarPedidos(this.contResul);
       });
-    window.addEventListener("DOMContentLoaded", this.#obtenerDatosDeClientes());
   }
+  // Al renderizar las cartas
+  renderizarPedidos(pedidos) {
+    const contenedor = document.getElementById("contenedor-pedidos");
 
-/* 
+    pedidos.forEach((pedido) => {
+      const carta = document.createElement("div");
+      carta.className = "carta-pedido";
+      carta.innerHTML = `
+            <div class="carta-header">
+                <h3>Pedido #${pedido.id}</h3>
+            </div>
+            
+            <div class="carta-body">
+                <p><strong>Cliente:</strong> ${pedido.nombreCliente}</p>
+                <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
+                <p><strong>Remuneración:</strong> $${pedido.remuneracion}</p>
+                <p><strong>Tipo:</strong> ${pedido.tipoPedido}</p>
+                <p><strong>Contacto:</strong> ${pedido.contacto}</p>
+            </div>
+        `;
 
-============================ 
-= MÉTODO EN IMPLEMENTACIÓN =
-============================
-- Al clickear las cartas de 
- clientes se obtenga el nombre
- y el id del cliente y se impriman 
- en el recuadro de usuario 
- almacenado
+      // Agregar event listeners (SIN onclick inline)
+      const btnCopiar = carta.querySelector(".btn-copiar");
+      const btnWhatsApp = carta.querySelector(".btn-whatsapp");
 
-#obtenerDatosDeClientes(){...}
-Por ahora los estilos están bien,
-actualmente ocurren problemas al 
-obtener al manipular la Información
-del nodo padre.
-*/
-  #obtenerDatosDeClientes() {
-    console.log("Ejecutando función de reconocimiento de clientes");
-    const btnCopiarClientes = document.querySelectorAll(".botonCliente");
-    console.log("=> debugging variable: " + btnCopiarClientes);
+      btnCopiar.addEventListener("click", () => copiarPedido(pedido));
+      // btnWhatsApp.addEventListener("click", () =>
+      //   enviarPorWhatsApp(pedido, pedido.contacto)
+      // );
 
-    btnCopiarClientes.forEach((btn) => console.log(btn.parentNode));
+      contenedor.appendChild(carta);
+    });
   }
 
   // metodo que consulta todos los clientes con un limite de 15 para imprimir en la pre busqueda
@@ -328,13 +336,11 @@ del nodo padre.
         <span class="respuesta">Dirección: ${cliente.direccion} </span>
         <span class="respuesta">Contacto: ${cliente.contacto} </span>
         <span class="respuesta">ID: ${cliente.id_cliente} </span>
-        <button class="botonCliente">COPIAR CLIENTE</button>
         `;
           lista.appendChild(item);
         });
         this.contResul.appendChild(lista);
       });
-    window.addEventListener("DOMContentLoaded", this.#obtenerDatosDeClientes());
   }
 
   consultarPedidos(contResul) {

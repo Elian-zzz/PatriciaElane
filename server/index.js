@@ -1,17 +1,20 @@
 // Declaramos las constantes de las exrenciónes de node que voy a usar
-const express = require("express");
-const path = require("path");
+import express from "express";
+import path from "path";
+import open from "open";
+import cors from "cors";
+// import { fileURLToPath } from "url";
 const app = express();
-const PUERTO = 3000;
-const db = require("./bd");
-const cors = require("cors");
+const PUERTO = 5000;
+import db from "./bd.mjs";
 
 app.use(express.json()); // Middleware para JSON
-app.use(cors());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(cors()); // Permite el uso de CORS para debugingg y testing
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "raiz.html"));
+  res.json({ success: true, message: "Servidor OK" });
 });
 // Ingresar un nuevo cliente
 app.post("/api/nuevoCliente", async (req, res) => {
@@ -300,4 +303,5 @@ JOIN estadoPedido ON pedido.id_pedido = estadoPedido.id_pedido WHERE estado = "p
 // Escucha del servidor
 app.listen(PUERTO, () => {
   console.log("Servidor PatWa escuchando en http://localhost:" + PUERTO);
+  // open("http://localhost:" + PUERTO);
 });

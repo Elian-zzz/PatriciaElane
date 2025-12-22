@@ -14,7 +14,7 @@ create table cliente (
 #consulta tabla cliente
 select * from cliente;
 #agregar un cliente
-insert into cliente(nombre,referencia,direccion,contacto) values("EjemploNombre","EjemploApellido","Dirección","Email@gmail.com");
+insert into cliente(nombre,referencia,direccion,contacto) values("Elian","Programador","Algun lugar","Email@gmail.com");
 #eliminar un cliente
 #delete from cliente where id_cliente =1;
 
@@ -34,7 +34,7 @@ foreign key (id_cliente) references cliente(id_cliente)
 select * from pedido;
 
 # ingresar un pedido
-insert into pedido(id_cliente, tipo, descripcion,remuneracion, inicio,final) values(1,"arreglo","hacer dos dobladillos en los puños del pantalón", 250,curdate(),curdate() + 1);
+insert into pedido(id_cliente, tipo, descripcion,remuneracion, inicio,final) values(1,"arreglo","hacer dos dobladillos en los puños del pantalón", 250,curdate(),curdate() + 3);
 # eliminar un pedido
 #delete from pedido where id_pedido=2;
 # buscar cliente por id:
@@ -69,43 +69,3 @@ select * from estadoPedido;
 
 #ingresar el estado de un pedido
 insert into estadoPedido(id_pedido,estado) values(1,"pendiente");
-# cambiar estado del pedido
-#update estadoPedido set estado = "concretado" where id_pedido = 3;
-# consulta todos los datos de el pedido y de el cliente + el estado del pedido
-#SELECT
-#  pedido.id_cliente,
-#  cliente.nombre AS nombre_cliente,
-#  pedido.id_pedido,
-#  pedido.tipo,
-#  pedido.descripcion,
-#  pedido.remuneracion,
-#  DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
-#  DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final,
-#  estadoPedido.estado
-#FROM pedido
-#JOIN cliente ON pedido.id_cliente = cliente.id_cliente
-#JOIN estadoPedido ON pedido.id_pedido = estadoPedido.id_pedido where estado = "pendiente" limit 15;
-
-# id_cliente, nombre_cliente, id_pedido,tipo,descripcion,remuneracion,inicio,final,estado
-
-# obtiene solo el nombre de los clientes
-#select nombre,referencia from cliente where nombre like "elian";
-
-# pedidos de media y alta prioridad
-# busca pedidos por su fecha de finalización, para la función de último plazo de pedidos de hoy
-#SELECT
-#  pedido.id_cliente,
-#  cliente.nombre AS nombre_cliente,
-#  pedido.id_pedido,
-#  pedido.tipo,
-#  pedido.descripcion,
-#  pedido.remuneracion,
-#  DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
-#  DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final,
-#  estadoPedido.estado
-#FROM pedido
-#JOIN cliente ON pedido.id_cliente = cliente.id_cliente
-#JOIN estadoPedido ON pedido.id_pedido = estadoPedido.id_pedido where estado = "pendiente" && final = curdate() ;
-
-# id_cliente,nombre_cliente,id_pedido,tipo,descripcion,remuneracion,inicio,final,estado
-
