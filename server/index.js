@@ -16,8 +16,11 @@ app.use(cors()); // Permite el uso de CORS para debugingg y testing
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Servidor OK" });
 });
+
+//  = = = = = = C L I E N T E S = = = = = =
+
 // Ingresar un nuevo cliente
-app.post("/api/nuevoCliente", async (req, res) => {
+app.post("/api/clientes", async (req, res) => {
   const { nom, referencia, direccion, contacto } = req.body;
 
   try {
@@ -34,8 +37,9 @@ app.post("/api/nuevoCliente", async (req, res) => {
     });
   }
 });
+
 // Consutar clientes
-app.get("/api/consultarClientes", async (req, res) => {
+app.get("/api/clientes", async (req, res) => {
   try {
     const [rows] = await db.query(
       "select id_cliente,nombre,referencia,direccion,contacto from cliente limit 7;"
@@ -47,24 +51,9 @@ app.get("/api/consultarClientes", async (req, res) => {
       .json({ error: "Error en la consulta", detalle: error.message });
   }
 });
-// Consutar pedidos
-app.get("/api/consultarPedidos", async (req, res) => {
-  try {
-    const [rows] = await db.query(
-      `SELECT pedido.id_pedido, pedido.id_cliente, cliente.nombre AS nombre_cliente, pedido.tipo, pedido.descripcion, pedido.remuneracion,
-        DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
-        DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final
-       FROM pedido
-       JOIN cliente ON pedido.id_cliente = cliente.id_cliente
-       LIMIT 7;`
-    );
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: "Error en la consulta" });
-  }
-});
+
 // Consultar cliente por nombre
-app.get("/api/consultarClientePorNombre", async (req, res) => {
+app.get("/api/clientes/busqueda", async (req, res) => {
   const { nombre } = req.query;
   if (!nombre) {
     return res.json({ success: false, error: "datos incompletos" });
@@ -82,35 +71,36 @@ app.get("/api/consultarClientePorNombre", async (req, res) => {
     });
   }
 });
-// Consultar pedido por nombre
-app.get("/api/consultarPedidoPorNombre", async (req, res) => {
-  // /api/consultarPedidoPorNombre?nombre=ejemplo
-  const { nombre } = req.query;
+
+// Consultar si el nombre que ingrese un nuevo usuario ya existe en la BD
+app.get("/api/clientes/consulta", async (req, res) => {
+  // select nombre from cliente where nombre like ?;
+  const { nombre } = req.query; // desestructura el objeto obtenido en la petición
   if (!nombre) {
     return res.json({ success: false, error: "datos incompletos" });
   }
   try {
     const [rows] = await db.query(
-      `SELECT pedido.id_pedido, pedido.id_cliente, cliente.nombre AS nombre_cliente, pedido.tipo, pedido.descripcion, pedido.remuneracion,
-        DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
-        DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final
-       FROM pedido
-       JOIN cliente ON pedido.id_cliente = cliente.id_cliente 
-       WHERE cliente.nombre LIKE ?
-       LIMIT 20;`,
-      /**/
-      [nombre + "%"]
+      "SELECT nombre,referencia FROM cliente WHERE nombre LIKE ?",
+      nombre
     );
-    res.json(rows);
+    res.json(rows); // Envía la respuesta de la BD en formato json
   } catch (error) {
     res.status(500).json({
-      error: "error en la consulta por nombre",
+      error: "error en la consulta de nombre a la BD",
       detalle: error.message,
     });
   }
 });
+
+// = = = = = = = = = = = = = = = = = = = = = = 
+
+
+
+// = = = = = = P E D I D O S = = = = = =
+
 // Ingresar un pedido
-app.post("/api/ingresarPedido", async (req, res) => {
+app.post("/api/pedidos", async (req, res) => {
   // tipo, descripcion,remuneracion, inicio,final
 
   const { id_cliente, tipo, descripcion, remuneracion, inicio, final } =
@@ -154,8 +144,58 @@ app.post("/api/ingresarPedido", async (req, res) => {
     });
   }
 });
+
+// Consutar pedidos
+app.get("/api/pedidos", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT pedido.id_pedido, pedido.id_cliente, cliente.nombre AS nombre_cliente, pedido.tipo, pedido.descripcion, pedido.remuneracion,
+        DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
+        DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final
+       FROM pedido
+       JOIN cliente ON pedido.id_cliente = cliente.id_cliente
+       LIMIT 7;`
+    );
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: "Error en la consulta" });
+  }
+});
+
+// Consultar pedido por nombre
+app.get("/api/pedidos/consulta", async (req, res) => {
+  // /api/consultarPedidoPorNombre?nombre=ejemplo
+  const { nombre } = req.query;
+  if (!nombre) {
+    return res.json({ success: false, error: "datos incompletos" });
+  }
+  try {
+    const [rows] = await db.query(
+      `SELECT pedido.id_pedido, pedido.id_cliente, cliente.nombre AS nombre_cliente, pedido.tipo, pedido.descripcion, pedido.remuneracion,
+        DATE_FORMAT(pedido.inicio, '%Y-%m-%d') AS inicio,
+        DATE_FORMAT(pedido.final, '%Y-%m-%d') AS final
+       FROM pedido
+       JOIN cliente ON pedido.id_cliente = cliente.id_cliente 
+       WHERE cliente.nombre LIKE ?
+       LIMIT 20;`,
+      /**/
+      [nombre + "%"]
+    );
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({
+      error: "error en la consulta por nombre",
+      detalle: error.message,
+    });
+  }
+});
+
+
+
+//  ========== ESTADO PEDIDOS ==========
+
 // Ingresar estado de un pedido
-app.post("/api/ingresarEstadoPedido", async (req, res) => {
+app.post("/api/Estado-pedidos", async (req, res) => {
   console.log("consulta estado pedido");
   const { id_pedido, estado } = req.body;
   if (!id_pedido) {
@@ -175,8 +215,9 @@ app.post("/api/ingresarEstadoPedido", async (req, res) => {
     });
   }
 });
+
 //  Actualizar estado de pedidos
-app.post("/api/actualizarEstadoPedido", async (req, res) => {
+app.put("/api/Estado-pedidos", async (req, res) => {
   console.log("consulta estado pedido");
   const { id_pedido, estado } = req.body;
   if (!id_pedido) {
@@ -196,29 +237,9 @@ app.post("/api/actualizarEstadoPedido", async (req, res) => {
     });
   }
 });
-// Consultar si el nombre que ingrese un nuevo usuario ya existe en la BD
-app.get("/api/consultarNombreClientes", async (req, res) => {
-  // select nombre from cliente where nombre like ?;
-  const { nombre } = req.query; // desestructura el objeto obtenido en la petición
-  if (!nombre) {
-    return res.json({ success: false, error: "datos incompletos" });
-  }
-  try {
-    const [rows] = await db.query(
-      "SELECT nombre,referencia FROM cliente WHERE nombre LIKE ?",
-      nombre
-    );
-    res.json(rows); // Envía la respuesta de la BD en formato json
-  } catch (error) {
-    res.status(500).json({
-      error: "error en la consulta de nombre a la BD",
-      detalle: error.message,
-    });
-  }
-});
 
-// consultar estado de pedidos pendientes...
-app.get("/api/pedidosPendientes", async (req, res) => {
+// consultar estado de pedidos pendientes..
+app.get("/api/Estado-pedidos/pendientes", async (req, res) => {
   try {
     const [rows] = await db.query(`
   SELECT
@@ -246,7 +267,7 @@ app.get("/api/pedidosPendientes", async (req, res) => {
 });
 
 // consultar estado de pedidos concretados ...
-app.get("/api/pedidosConcretados", async (req, res) => {
+app.get("/api/Estado-pedidos/concretados", async (req, res) => {
   try {
     const [rows] = await db.query(`
   SELECT
@@ -273,7 +294,7 @@ app.get("/api/pedidosConcretados", async (req, res) => {
   }
 });
 // consultar pedidos último plazo
-app.get("/api/pedidosUltimoPlazo", async (req, res) => {
+app.get("/api/Estado-pedidos/Ultimo-plazo", async (req, res) => {
   try {
     const [rows] = await db.query(`
   SELECT
@@ -299,6 +320,10 @@ JOIN estadoPedido ON pedido.id_pedido = estadoPedido.id_pedido WHERE estado = "p
     });
   }
 });
+
+// ====================================
+
+// = = = = = = = = = = = = = = = = = = = = = = 
 
 // Escucha del servidor
 app.listen(PUERTO, () => {

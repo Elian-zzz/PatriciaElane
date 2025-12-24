@@ -1,0 +1,17 @@
+.sumP {
+  font-family: sans-serif;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0.5rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: var(--transition);
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.sumP:hover {
+  background-color: var(--primary);
+  color: #fff;
+  transform: translateX(5px);
+  font-weight: 500;
+}

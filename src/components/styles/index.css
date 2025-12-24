@@ -1,0 +1,615 @@
+:root {
+  --verde1: #3e6b4080;
+  --verde2: #1f52219d;
+  --rojo1: #6b403e80;
+  --rojo2: #521f1f9d;
+  --fuenteFormal: Verdana, Geneva, Tahoma, sans-serif;
+  --primary: #4caf50;
+  --primary-dark: #3e8e41;
+  --bg-main: rgba(95, 151, 131, 0.315);
+  --bg-aside: #f8f9fa;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+  --transition: all 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overscroll-behavior: none;
+  font-size: 16px;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 5px;
+  transition: var(--transition);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* Aside / Sidebar */
+aside {
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-aside);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  z-index: 100;
+  transition: var(--transition);
+}
+
+/* Botón principal de estado pedidos */
+/* button[cosultar_pedidos] {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button[cosultar_pedidos]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+button[cosultar_pedidos]:active {
+  transform: translateY(0);
+} */
+
+/* Details / Acordeón */
+details {
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: var(--shadow);
+  margin-bottom: 1rem;
+  background-color: #fff;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+details:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+summary {
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 1rem;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
+  color: #fff;
+  border-radius: var(--radius);
+  list-style: none;
+  user-select: none;
+  transition: var(--transition);
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::after {
+  content: "▼";
+  float: right;
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+details[open] summary::after {
+  transform: rotate(180deg);
+}
+
+summary:hover {
+  background: var(--primary-dark);
+}
+
+details[open] {
+  background-color: #fff;
+}
+
+details[open] summary {
+  border-radius: var(--radius) var(--radius) 0 0;
+  margin-bottom: 0.5rem;
+}
+
+
+
+
+/* Main Content */
+main {
+  background-color: var(--bg-main);
+  min-height: 100vh;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+h1 {
+  font-family: "Courier New", Courier, monospace;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+/* Formularios */
+form {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+form h1 {
+  text-align: center;
+  color: var(--primary-dark);
+  margin-bottom: 2rem;
+}
+
+.contenedor {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.contenedor label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.contenedor input,
+.contenedor select,
+.contenedor textarea {
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.contenedor input:focus,
+.contenedor select:focus,
+.contenedor textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.contenedor textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Botones generales */
+button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+form button[type="button"] {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
+
+/* Contenedores de búsqueda */
+.contenedorV {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inputBC,
+.inputBP {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.inputBC:focus,
+.inputBP:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* Listas de clientes */
+ul.clientes,
+.PedidoUltimoDia > ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+ul.clientes li {
+  background: white;
+  cursor: pointer;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  border-left: 4px solid var(--primary);
+}
+
+ul.clientes > li > button:active {
+  background-color: #33333359;
+  transition: none;
+}
+
+.PedidoUltimoDia > ul li {
+  background: rgba(153, 65, 65, 0.45);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  border-left: 4px solid var(--primary);
+  font-size: larger;
+}
+
+ul.clientes li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Listas de pedidos */
+ul.pedidos {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+ul.pedidos li {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+ul.pedidos li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+ul.pedidos li span {
+  color: white;
+}
+
+.respuesta {
+  display: block;
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+ul.pedidos .respuesta {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.respuesta.nombre {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.PedidoUltimoDia > * > * > [nombre] {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #ffc5c5;
+}
+ul.pedidos .respuesta.nombre {
+  color: white;
+}
+
+.respuesta mark {
+  background-color: #ffd54f;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Contenedor de estados */
+#contenedor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  padding: 0;
+  margin: 0;
+  align-items: start;
+}
+
+div[contEstado] {
+  min-width: 100%;
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+[tituloUwu] {
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  font-family: var(--fuenteFormal);
+  font-size: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid;
+}
+
+[tituloUwu][Pendiente] {
+  color: #d32f2f;
+  border-bottom-color: #d32f2f;
+}
+
+[tituloUwu][Concretado] {
+  color: #388e3c;
+  border-bottom-color: #388e3c;
+}
+
+[contAsistente] {
+  border: none;
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+[contAsistente]:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#contC [colin] {
+  background-color: var(--verde1);
+}
+
+#contC [colpar] {
+  background-color: var(--verde2);
+}
+
+#contP [colin],
+.PedidoUltimoDia [colin] {
+  background-color: var(--rojo1);
+}
+
+#contP [colpar],
+.PedidoUltimoDia [colpar] {
+  background-color: var(--rojo2);
+}
+
+[contAsistente] span {
+  display: block;
+  padding: 0.75rem;
+  font-weight: 500;
+  color: #333;
+  text-shadow: none;
+}
+
+span[spanNombre] {
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[resultado] {
+  color: #fff;
+  font-family: sans-serif;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[descripcion] {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Alertas y errores */
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid #f5c6cb;
+  border-left: 4px solid #d32f2f;
+}
+
+/* Pedidos con último plazo */
+.PedidoUltimoDia {
+  border: 3px solid #d32f2f;
+  background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(211, 47, 47, 0.3);
+  animation: pulse 2s infinite;
+  gap: 0;
+}
+
+.PedidoUltimoDia h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.PedidoUltimoDia span {
+  display: block;
+  margin: 0.5rem 0;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(211, 47, 47, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(211, 47, 47, 0.6);
+  }
+}
+
+/* Botón actualizar estado */
+.btnActualizarEP {
+  width: 100%;
+  margin-top: 0.5rem;
+  background: white;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.btnActualizarEP:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  body {
+    grid-template-columns: 220px 1fr;
+  }
+
+  aside {
+    padding: 1rem 0.75rem;
+  }
+
+  #contenedor {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.alerta {
+  border: 1.5px solid red;
+  border-radius: 15px;
+  padding: 1rem;
+  font-size: larger;
+  font-weight: 700;
+  width: fit-content;
+  display: flex;
+  justify-self: center;
+  color: #f1f1f1;
+  background-color: #333;
+}
+
+/* Mejoras de accesibilidad */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Animaciones suaves */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+/* Print styles */
+@media print {
+  aside {
+    display: none;
+  }
+
+  body {
+    grid-template-columns: 1fr;
+  }
+
+  main {
+    padding: 0;
+  }
+}
+
+/* From Uiverse.io by satyamchaudharydev */
+/* inspired form gumroad website */
